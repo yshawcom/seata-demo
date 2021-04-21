@@ -1,0 +1,79 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: seata-demo-storage
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:18848
+        group: XDL_GROUP
+  datasource:
+    url: jdbc:mysql://mysql:3307/xdl-seata?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+    druid:
+      max-active: 50
+      filters: stat,wall,slf4j
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: true
+        login-username: druid
+        login-password: druid
+      filter:
+        stat:
+          enabled: true
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        session-stat-enable: true
+        session-stat-max-count: 1000
+        profile-enable: true
+  jpa:
+    show_sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+        model:
+          # 不使用 @TableGenerator 的 name 作为 table 名称, 使用默认的 "hibernate_sequences"
+          generator_name_as_sequence_name: false
+
+feign:
+  sentinel:
+    enabled: true
+
+seata:
+  enabled: true
+  tx-service-group: my_test_tx_group
+  service:
+    vgroup-mapping:
+      my_test_tx_group: default
+    disableGlobalTransaction: false
+  registry:
+    type: nacos
+    nacos:
+      application: xdl-seata-server
+      server-addr: nacos:18848
+      group: "XDL_SEATA_GROUP"
+      namespace: "xdl"
+      cluster: default
+      username: "nacos"
+      password: "nacos"
+  config:
+    type: nacos
+    nacos:
+      server-addr: nacos:18848
+      group: "SEATA_GROUP"
+      namespace: "public"
+      username: "nacos"
+      password: "nacos"
+
+logging:
+  level:
+    root: info
